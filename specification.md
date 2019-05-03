@@ -9,11 +9,73 @@ This is a list of Toothpick tokens and reserved keywords.
 ## Philosophy
 ### Functional paradigm
 
-@todo
+Toothpick is a functional language, which makes it a very readable language. It also elimites a lot of problems from object-oriented languages.
+
+Take the following code as an example:
+
+```js
+function getAdults(users) {
+  const result = [];
+
+  for (const user of users) {
+    if (user.age >= 18) {
+      result.push(user);
+    }
+  }
+
+  return result;
+}
+```
+
+This code is not very readable. It goes through the list, checks if age is greater, pushes to a temporary variable and then returns a resulting array. The exact same code may be written as follows:
+
+```js
+function getAdults(users) {
+  return users.filter(user => user.age >= 18);
+}
+```
+
+This code shows exactly the intent. If I was asked, this function returns a filtered list of users, where each user's age is greater or equal 18. This is the reason functional programming is so great. As a closing remark, let's see how the exact same code looks in Toothpick:
+
+<tp-source>
+```
+fun get_adults @users ->
+  return filter(users, { @user } -> gte(get(@user, 'age'), 18))
+.
+```
+</tp-source>
 
 ### Mutation, or rather lack thereof
 
-@todo
+In Toothpick every structure is not mutable, which means it eliminates a lot of bugs. If you pass a list into a function, its pointer will be passed. If you try to mutate it, its copy will be copied. Take this example for clarification:
+
+In JavaScript, you may mutate a passed list:
+
+```js
+function printSorted(array) {
+  console.log(array.sort()) // This may be not intentional, but it mutates the original array and prints [1, 2, 3, 4]
+}
+
+const array = [1, 4, 3, 2];
+console.log(array); // [1, 4, 3, 2]
+printSorted(array);
+console.log(array); // [1, 2, 3, 4] // the original array's order has been mistakenly changed
+```
+
+On the other hand, in Toothpick every operation returns a copy, meaning this is impossible:
+
+<tp-source>
+```
+fun print_sorted @array ->
+  print(sorted(@array)) # prints [1, 2, 3, 4], but the original array is unchanged
+.
+
+@array = [1, 4, 3, 2]
+print(@array) # [1, 4, 3, 2]
+print_sorted(@array)
+print(@array) # [1, 4, 3, 2] # the original array's order is not changed
+```
+</tp-source>
 
 ## Constructs
 ### Literals
@@ -150,7 +212,31 @@ return @b # this is never executed
 
 ### Lists
 
-@todo
+Lists are working the same way JavaScript arrays are. In fact, they are compiled into JS arrays.
+
+<tp-source>
+```
+@a = [1, 2, 3, 4]
+```
+</tp-source>
+
+
+### Maps
+
+Toothpick does not support any kind of maps. If you want to create a map, you may create a list of lists, where each sub-list represents a key and a value. For instance, a JavaScript's object may be represented the following way:
+
+<tp-source>
+```
+# {
+#   a: 7,
+#   b: [1, 2, 3],
+# }
+
+[['a', 7], ['b', [1, 2, 3]]]
+```
+</tp-source>
+
+This is intentional. Authors have found themselves using `Object.entries` and `Object.fromEntries` or their Lodash's counterparts (`_.toPairs` and `_.fromPairs`) a lot in day-to-day programming. To limit this traversal, maps have been completly elimited from the language. This may be problematic, as `[].find` is `O(n)`, whereas `{}.key` is `O(1)`. This may be solved in future versions of the language, by smart list implementations behind the scenes.
 
 ### Pipe operator
 

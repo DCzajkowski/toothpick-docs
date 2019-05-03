@@ -7,10 +7,10 @@
 <script>
   const syntax = [
     { match: /(\s|^|\()(#.*)/g, name: "comment" },
-    { match: /(\s|^|\()('[^']*')/g, name: "string" },
+    { match: /(\s|^|\(|\[)('[^']*')/g, name: "string" },
     { match: /(\s|^|\()(fun|return|if)/g, name: "keyword" },
-    { match: /(\s|^|\()(\>|\=|\-\>|\.|\[|\]|\$)/g, name: "operator" },
-    { match: /(\s|^|\()(\d+)/g, name: "number" },
+    { match: /(\s|^|\()(\>|\=|\-\>|\.|\$)/g, name: "operator" },
+    { match: /(\s|^|\(|\[)(\d+)/g, name: "number" },
     { match: /(\s|^|\()(true|false)/g, name: "boolean" },
     { match: /(\s|^|\()(@[^\s\-\(\)\,\.\[\]\>\$]+)/g, name: "variable" }
   ];
